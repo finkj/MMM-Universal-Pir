@@ -8,6 +8,7 @@ module.exports = NodeHelper.create({
   start() {
     this.started = false;
     this.activated = true;
+    this.errored = false;
   },
 
   getDataPIR() {
@@ -37,6 +38,7 @@ module.exports = NodeHelper.create({
   },
 
   activateMonitor() {
+    if (this.errored) return;
     this.sendSocketNotification("POWER_ON", true);
     this.activated = true;
 
@@ -52,6 +54,7 @@ module.exports = NodeHelper.create({
   // xrandr --output HDMI-1 --rotate normal --auto
 
   deactivateMonitor() {
+    if (this.errored) return;
     this.sendSocketNotification("POWER_OFF", true);
     this.activated = false;
 
@@ -74,6 +77,10 @@ module.exports = NodeHelper.create({
 
       this.getDataPIR();
       this.resetTimeout();
+    } else if (notification === "ERROR") {
+      this.errored = true;
+    } else if (notification === "NOERROR") {
+      this.errored = false;
     }
   },
 });

@@ -43,6 +43,11 @@ Module.register("MMM-PIR-Fedora", {
       }
       formData.times = this.diffSeconds;
     }
+    if (formData.errStr) {
+      this.sendSocketNotification("ERROR");
+    } else {
+      this.sendSocketNotification("NOERROR");
+    }
     return {
       formData: formData,
       config: this.config,
