@@ -1,8 +1,13 @@
 {% if formData.errStr %}
+  <header class="align-left">
+      <span>PIR Sensor</span>
+  </header>
   <div class="xsmall dimmed light">{{ formData.errStr }}</div>
 {% elif config.showCountDown %}
   {% if config.title %}
-  <div class="small light">{{ config.title }}</div>
+  <header class="align-left">
+      <span>{{ config.title }}</span>
+  </header>
   {% endif %}
   <div class="medium">
     {% if (config.detectionSymbol) and (formData.detected) %}

@@ -5,7 +5,7 @@ Module.register("MMM-PIR-Fedora", {
   defaults: {
     sensorPin: 0, // GPIO pin
     hdmiPort: "HDMI-1", // HDMI port for xrandr
-    title: "Automatic Standby",
+    title: "Monitor turns off in",
     rotation: "normal",
     deactivateDelay: 15 * 60 * 1000, // 15 minutes
     updateInterval: 1000, // 1 second
