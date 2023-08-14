@@ -1,0 +1,121 @@
+// Magic Mirror Module MMM-PIR-Fedora
+
+Module.register("MMM-PIR-Fedora", {
+  // Default module config
+  defaults: {
+    sensorPin: 0, // GPIO pin
+    hdmiPort: "HDMI-1", // HDMI port for xrandr
+    title: "Automatic Standby",
+    rotation: "normal",
+    deactivateDelay: 15 * 60 * 1000, // 15 minutes
+    updateInterval: 1000, // 1 second
+    animationSpeed: 1000, // 1 second
+    showCountDown: true,
+    detectionSymbol: "fas fa-person-rays bright",
+    // alternative Symbols: "fas fa-users-rays", "fas fa-arrows-to-eye", "fas fa-users-viewfinder", "fas fa-location-crosshairs", "fas fa-crosshairs"
+    hoursLabel: "h",
+    minutesLabel: "m",
+    secondsLabel: "s",
+  },
+
+  // Define required styles
+  getStyles() {
+    return ["font-awesome.css"];
+  },
+
+  getTemplate() {
+    return `${this.name}.njk`;
+  },
+
+  getTemplateData() {
+    let formData = {};
+    if (this.config.sensorPin === 0) {
+      formData.errStr = `Please set the GPIO pin number in the config for module ${this.name}.`;
+    } else if (!this.loaded) {
+      formData.errStr = this.translate("LOADING");
+    } else {
+      formData.detected = this.detected;
+      if (this.diffHours > 0) {
+        formData.timeh = this.diffHours;
+      }
+      if (this.diffMinutes > 0) {
+        formData.timem = this.diffMinutes;
+      }
+      formData.times = this.diffSeconds;
+    }
+    return {
+      formData: formData,
+      config: this.config,
+    };
+  },
+
+  // Define start sequence
+  start() {
+    Log.info(`Starting module: ${this.name}`);
+
+    this.resetCountdown();
+
+    this.loaded = false;
+    this.detected = false;
+    this.sendSocketNotification("CONFIG", this.config);
+  },
+
+  // PIR sensor data reception with node_helper
+  socketNotificationReceived(notification, payload) {
+    if (notification === "STARTED") {
+      this.loaded = true;
+      this.updateDom(this.config.animationSpeed);
+      Log.info(`${this.name}: PIR sensor start confirmed`);
+    } else if (notification === "USER_PRESENCE") {
+      this.setIconTimeout();
+      this.resetCountdown();
+    } else if (notification === "POWER_ON") {
+      Log.info(`${this.name}: Turn on the monitor`);
+    } else if (notification === "POWER_OFF") {
+      Log.info(`${this.name}: Turn off the monitor`);
+    }
+  },
+
+  // Set icon timeout
+  setIconTimeout() {
+    this.detected = true;
+    this.updateDom();
+    clearTimeout(this.iconTimeout);
+
+    var self = this;
+    self.iconTimeout = setTimeout(() => {
+      self.detected = false;
+      self.updateDom();
+    }, self.config.animationSpeed);
+  },
+
+  // Reset the countdown
+  resetCountdown() {
+    this.remainingTime = this.config.deactivateDelay;
+    this.updateCountdown();
+
+    clearInterval(this.countdownInterval);
+
+    var self = this;
+    self.countdownInterval = setInterval(() => {
+      self.remainingTime -= self.config.updateInterval;
+      self.updateCountdown();
+      if (self.remainingTime <= 0) {
+        clearInterval(self.countdownInterval);
+      }
+    }, self.config.updateInterval);
+  },
+
+  // Update variables for countdown display
+  updateCountdown() {
+    this.diffHours = Math.floor(
+      (this.remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    this.diffMinutes = Math.floor(
+      (this.remainingTime % (1000 * 60 * 60)) / (1000 * 60)
+    );
+    this.diffSeconds = Math.floor((this.remainingTime % (1000 * 60)) / 1000);
+
+    this.updateDom();
+  },
+});

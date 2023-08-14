@@ -1,0 +1,23 @@
+{% if formData.errStr %}
+  <div class="xsmall dimmed light">{{ formData.errStr }}</div>
+{% elif config.showCountDown %}
+  {% if config.title %}
+  <div class="small light">{{ config.title }}</div>
+  {% endif %}
+  <div class="medium">
+    {% if (config.detectionSymbol) and (formData.detected) %}
+    <i class="{{ config.detectionSymbol }}"></i>
+    <span>&nbsp;</span>
+    {% endif %}
+    {% if formData.timeh %}
+    <span class="bright">{{ formData.timeh }}</span>
+    <span class="small dimmed">{{ config.hoursLabel }}</span>
+    {% endif %}
+    {% if formData.timem %}
+    <span class="bright">{{ formData.timem }}</span>
+    <span class="small dimmed">{{ config.minutesLabel }}</span>
+    {% endif %}
+    <span class="bright">{{ formData.times }}</span>
+    <span class="small dimmed">{{ config.secondsLabel }}</span>
+  </div>
+{% endif %}
