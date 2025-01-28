@@ -1,4 +1,4 @@
-// Magic Mirror Module MMM-PIR-Fedora
+// Magic Mirror Module MMM-Universal-Pir
 
 const NodeHelper = require("node_helper");
 const spawn = require("child_process").spawn;
@@ -14,7 +14,7 @@ module.exports = NodeHelper.create({
   getDataPIR() {
     const prc = spawn("sh", [
       "-c",
-      `sudo gpiomon -r -b gpiochip0 ${this.config.sensorPin}`,
+      this.config.gpioCommand,
     ]);
 
     this.sendSocketNotification("STARTED", true);
@@ -42,25 +42,16 @@ module.exports = NodeHelper.create({
     this.sendSocketNotification("POWER_ON", true);
     this.activated = true;
 
-    exec(
-      "xrandr --output " +
-        this.config.hdmiPort +
-        " --rotate " +
-        this.config.rotation +
-        " --auto",
-      null
-    );
+    exec(this.config.onCommand, null);
   },
-  // xrandr --output HDMI-1 --rotate normal --auto
 
   deactivateMonitor() {
     if (this.errored) return;
     this.sendSocketNotification("POWER_OFF", true);
     this.activated = false;
 
-    exec("xrandr --output " + this.config.hdmiPort + " --off", null);
+    exec(this.config.offCommand, null);
   },
-  // xrandr --output HDMI-1 --off
 
   resetTimeout() {
     clearTimeout(this.timeout);

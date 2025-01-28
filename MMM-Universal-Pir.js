@@ -1,12 +1,12 @@
-// Magic Mirror Module MMM-PIR-Fedora
+// Magic Mirror Module MMM-Universal-Pir
 
-Module.register("MMM-PIR-Fedora", {
+Module.register("MMM-Universal-Pir", {
   // Default module config
   defaults: {
-    sensorPin: 0, // GPIO pin
-    hdmiPort: "HDMI-1", // HDMI port for xrandr
+    gpioCommand: "gpiomon -r -b gpiochip0 23",
+    onCommand: "wlr-randr --output HDMI-A-1 --on",
+    offCommand: "wlr-randr --output HDMI-A-1 --off",
     title: "Monitor turns off in",
-    rotation: "normal",
     deactivateDelay: 15 * 60 * 1000, // 15 minutes
     updateInterval: 1000, // 1 second
     animationSpeed: 1000, // 1 second
@@ -29,9 +29,7 @@ Module.register("MMM-PIR-Fedora", {
 
   getTemplateData() {
     let formData = {};
-    if (this.config.sensorPin === 0) {
-      formData.errStr = `Please set the GPIO pin number in the config for module ${this.name}.`;
-    } else if (!this.loaded) {
+    if (!this.loaded) {
       formData.errStr = this.translate("LOADING");
     } else {
       formData.detected = this.detected;
