@@ -1,4 +1,4 @@
-// Magic Mirror Module MMM-Universal-Pir
+// MagicMirror² Module MMM-Universal-Pir
 
 Module.register("MMM-Universal-Pir", {
   // Default module config
@@ -18,6 +18,8 @@ Module.register("MMM-Universal-Pir", {
     secondsLabel: "s",
   },
 
+  gpioError: false,
+
   // Define required styles
   getStyles() {
     return ["font-awesome.css"];
@@ -31,6 +33,8 @@ Module.register("MMM-Universal-Pir", {
     let formData = {};
     if (!this.loaded) {
       formData.errStr = this.translate("LOADING");
+    } else if (this.gpioError) {
+      formData.errStr = "gpioCommand exited with error!";
     } else {
       formData.detected = this.detected;
       if (this.diffHours > 0) {
@@ -76,6 +80,8 @@ Module.register("MMM-Universal-Pir", {
       Log.info(`${this.name}: Turn on the monitor`);
     } else if (notification === "POWER_OFF") {
       Log.info(`${this.name}: Turn off the monitor`);
+    } else if (notification === "GPIO_ERROR") {
+      this.gpioError = true;
     }
   },
 
@@ -98,15 +104,16 @@ Module.register("MMM-Universal-Pir", {
     this.updateCountdown();
 
     clearInterval(this.countdownInterval);
-
-    var self = this;
-    self.countdownInterval = setInterval(() => {
-      self.remainingTime -= self.config.updateInterval;
-      self.updateCountdown();
-      if (self.remainingTime <= 0) {
-        clearInterval(self.countdownInterval);
-      }
-    }, self.config.updateInterval);
+    if (!this.gpioError) {
+      var self = this;
+      self.countdownInterval = setInterval(() => {
+        self.remainingTime -= self.config.updateInterval;
+        self.updateCountdown();
+        if (self.remainingTime <= 0) {
+          clearInterval(self.countdownInterval);
+        }
+      }, self.config.updateInterval);
+    }
   },
 
   // Update variables for countdown display

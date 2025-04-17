@@ -1,4 +1,4 @@
-// Magic Mirror Module MMM-Universal-Pir
+// MagicMirror² Module MMM-Universal-Pir
 
 const NodeHelper = require("node_helper");
 const spawn = require("child_process").spawn;
@@ -25,7 +25,8 @@ module.exports = NodeHelper.create({
     });
 
     prc.on("close", (code) => {
-      console.log(`child process exited with code ${code}`);
+      this.sendSocketNotification("GPIO_ERROR", true);
+      console.error(`child process exited with code ${code}`);
     });
 
     prc.stdout.on("data", (data) => {
