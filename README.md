@@ -22,7 +22,7 @@ You can put your own commands in `config.js` for controlling the sensor and the 
     module: "MMM-Universal-Pir",
     position: "top_right",
     config: {
-      gpioCommand: "gpiomon -r -b gpiochip0 23",
+      gpioCommand: "gpiomon -e rising -c 0 23",
       onCommand: "wlr-randr --output HDMI-A-1 --on",
       offCommand: "wlr-randr --output HDMI-A-1 --off",
       deactivateDelay: 60 * 1000,
@@ -30,7 +30,7 @@ You can put your own commands in `config.js` for controlling the sensor and the 
   },
 ```
 
-> ⚠️ `gpiomon` exists in several versions, the above example `gpiomon -r -b gpiochip0 23` works with v1.6.3, newer version as e.g. v2.2.1 are using another syntax so you have to change the command to `gpiomon -e rising -c 0 23`. You can check your version with `gpiomon -v`.
+> ⚠️ `gpiomon` exists in several versions, the above example `gpiomon -e rising -c 0 23` must be used in newer versions v2 of `gpiomon` which is installed on debian `trixie`. Older systems are using `gpiomon` v1, this version is installed on debian `bookworm`. Here you have to use the old syntax `gpiomon -r -b gpiochip0 23`. You can check your version with `gpiomon -v`.
 
 
 - `gpioCommand` uses `gpiomon` (which should be installed on a pi) and the sensor is connected on pin 23
@@ -68,3 +68,24 @@ Please test the used commands first outside of MagicMirror². If they not work f
 So the `offCommand` should disable the screen and the `onCommand` should enable it again.
 
 The `gpioCommand` should wait for events and produce some output if the PIR sensor is touched.
+
+## Container setup
+
+If you see an error message on the screen `gpioCommand exited with error!` you should examine the container logs. If you see a `permission denied` error message like
+
+```bash
+[ERROR] stderr: gpiomon: error waiting for events: Permission denied
+```
+
+the container maybe lacks the gpio group. You can find the gpio group on the host by executing `cat /etc/group | grep gpio`. Add the number found in the output (here 986) to your `compose.yaml` in a `group_add` section:
+
+```yaml
+services:
+  magicmirror:
+    container_name: mm
+    ...
+    group_add:
+      - 986
+```
+
+You must restart the container for the changes to take effect.
