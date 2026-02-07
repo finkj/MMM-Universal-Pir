@@ -1,4 +1,6 @@
 // MagicMirror² Module MMM-Universal-Pir
+// Original: https://gitlab.com/khassel/MMM-Universal-Pir
+// Forked and modified
 
 Module.register("MMM-Universal-Pir", {
   // Default module config

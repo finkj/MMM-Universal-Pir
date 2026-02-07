@@ -1,4 +1,6 @@
 // MagicMirror² Module MMM-Universal-Pir
+// Original: https://gitlab.com/khassel/MMM-Universal-Pir
+// Forked and modified
 
 const NodeHelper = require("node_helper");
 const spawn = require("child_process").spawn;
