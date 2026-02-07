@@ -1,6 +1,6 @@
 # **MMM-Universal-Pir**
 
-Fork of https://gitlab.com/khassel/MMM-Universal-Pir
+Fork of https://gitlab.com/khassel/MMM-Universal-Pir  
 A module for **MagicMirror²** using a PIR Sensor for disabling/enabling Screen Output.
 
 ## Installation
