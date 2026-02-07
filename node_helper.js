@@ -30,6 +30,7 @@ module.exports = NodeHelper.create({
     });
 
     prc.stdout.on("data", (data) => {
+      console.log("MMM-Universal-Pir: Person detected");
       this.sendSocketNotification("USER_PRESENCE", true);
       this.resetTimeout();
       if (this.activated == false) {
@@ -40,6 +41,7 @@ module.exports = NodeHelper.create({
 
   activateMonitor() {
     if (this.errored) return;
+    console.log("MMM-Universal-Pir: Turning monitor ON");
     this.sendSocketNotification("POWER_ON", true);
     this.activated = true;
 
@@ -48,6 +50,7 @@ module.exports = NodeHelper.create({
 
   deactivateMonitor() {
     if (this.errored) return;
+    console.log("MMM-Universal-Pir: Turning monitor OFF");
     this.sendSocketNotification("POWER_OFF", true);
     this.activated = false;
 

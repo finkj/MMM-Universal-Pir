@@ -76,6 +76,7 @@ Module.register("MMM-Universal-Pir", {
     } else if (notification === "USER_PRESENCE") {
       this.setIconTimeout();
       this.resetCountdown();
+      Log.info(`${this.name}: Person detected`);
     } else if (notification === "POWER_ON") {
       Log.info(`${this.name}: Turn on the monitor`);
     } else if (notification === "POWER_OFF") {
